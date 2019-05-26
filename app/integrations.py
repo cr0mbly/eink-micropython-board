@@ -4,7 +4,8 @@ from utime import localtime
 from config import TIMEZONE_DB_URL, TIMEZONE_DB_API_KEY
 from exceptions import FailedCurrentTimeRequestException
 
-def get_current_time(timezone):
+
+def get_current_time(timezone: str):
     """
     :param timezone: plain text name of timezone e.g. `Pacific/Auckland`
     :return: datetime object with current time
@@ -20,7 +21,7 @@ def get_current_time(timezone):
     return localtime(timestamp)
 
 
-def convert_fields_query_params(path, query_parameters):
+def convert_fields_query_params(path: str, query_parameters: dict):
     """
     :param path: path of the current url
     :param query_parameters: dict containing query keys and values
