@@ -1,6 +1,6 @@
 from micropython import const
 from time import sleep_ms
-import ustruct
+from ustruct import pack
 
 # Display resolution
 EPD_WIDTH = const(128)
@@ -66,7 +66,7 @@ class EPD:
 
     def init(self):
         self.reset()
-        self._command(DRIVER_OUTPUT_CONTROL, ustruct.pack("<HB", EPD_HEIGHT - 1, 0x00))
+        self._command(DRIVER_OUTPUT_CONTROL, pack("<HB", EPD_HEIGHT - 1, 0x00))
         self._command(BOOSTER_SOFT_START_CONTROL, b'\xD7\xD6\x9D')
         self._command(WRITE_VCOM_REGISTER, b'\xA8')  # VCOM 7C
         self._command(SET_DUMMY_LINE_PERIOD, b'\x1A')  # 4 dummy lines per gate
@@ -129,14 +129,14 @@ class EPD:
         # x point must be the multiple of 8 or the last 3 bits will be ignored
         self._data(bytearray([(x_start >> 3) & 0xFF]))
         self._data(bytearray([(x_end >> 3) & 0xFF]))
-        self._command(SET_RAM_Y_ADDRESS_START_END_POSITION, ustruct.pack("<HH", y_start, y_end))
+        self._command(SET_RAM_Y_ADDRESS_START_END_POSITION, pack("<HH", y_start, y_end))
 
     # specify the start point for data R/W
     def set_memory_pointer(self, x, y):
         self._command(SET_RAM_X_ADDRESS_COUNTER)
         # x point must be the multiple of 8 or the last 3 bits will be ignored
         self._data(bytearray([(x >> 3) & 0xFF]))
-        self._command(SET_RAM_Y_ADDRESS_COUNTER, ustruct.pack("<H", y))
+        self._command(SET_RAM_Y_ADDRESS_COUNTER, pack("<H", y))
         self.wait_until_idle()
 
     # to wake call reset() or init()

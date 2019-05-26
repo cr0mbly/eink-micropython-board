@@ -3,8 +3,6 @@ from utime import localtime
 
 from config import TIMEZONE_DB_URL, TIMEZONE_DB_API_KEY
 from exceptions import FailedCurrentTimeRequestException
-from utils import convert_fields_query_params
-
 
 def get_current_time(timezone):
     """
@@ -20,3 +18,12 @@ def get_current_time(timezone):
 
     timestamp = response_json['zones'][0]['timestamp']
     return localtime(timestamp)
+
+
+def convert_fields_query_params(path, query_parameters):
+    """
+    :param path: path of the current url
+    :param query_parameters: dict containing query keys and values
+    :return: built query url
+    """
+    return path + '?' + '&'.join('%s=%s' % (key, value) for key, value in query_parameters.items())
