@@ -3,7 +3,9 @@ from app.display import StatusBar
 
 
 def main():
-    display = EinkDisplay().initialize_display()
+    display = EinkDisplay()
+    display.initialize_display()
+
     status_bar = StatusBar(display)
     status_bar.redraw_status_bar()
 
