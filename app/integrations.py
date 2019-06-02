@@ -1,8 +1,8 @@
 from urequests import get as http_get
 from utime import localtime
 
-from config import TIMEZONE_DB_URL, TIMEZONE_DB_API_KEY
-from exceptions import FailedCurrentTimeRequestException
+from app.config import TIMEZONE_DB_URL, TIMEZONE_DB_API_KEY
+from app.exceptions import FailedCurrentTimeRequestException
 
 
 def get_current_time(timezone: str):
@@ -12,7 +12,11 @@ def get_current_time(timezone: str):
     """
     settings = {'key': TIMEZONE_DB_API_KEY, 'format': 'json', 'fields': 'timestamp', 'zone': timezone}
     path_url = convert_fields_query_params('/v2.1/list-time-zone', settings)
-    response_json = http_get(TIMEZONE_DB_URL + path_url).json()
+
+    response = http_get(TIMEZONE_DB_URL + path_url)
+    response.close()
+
+    response_json = response.json()
 
     if response_json['status'] != 'OK':
         raise FailedCurrentTimeRequestException()

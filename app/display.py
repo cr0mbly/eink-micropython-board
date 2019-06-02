@@ -77,17 +77,33 @@ class StatusBar:
 
     # Style formatting for StatusBar.
     STATUS_BAR_HEIGHT = const(15)
-    NOTIFICATION_WIDTH = const(50)
     STATUS_BAR_PADDING = const(5)
+    STATUS_BAR_TIME_SPACER = const(85)
+    NOTIFICATION_WIDTH = const(50)
 
-    notification = 'Hey ma.'  # String containing notification message.
-    time_display = None       # localtime object for display.
+    notification = ''  # String containing notification message.
+    time_display = None  # localtime object for display.
 
     def __init__(self, display: EinkDisplay):
         self.display = display
 
+    def clear_status_bar(self):
+        """
+        Clear the framebuffer of any data. useful when redrawing the status bar.
+        :return: None
+        """
+        self.display.frame_buffer.fill_rect(
+            DEFAULT_X_COORD,
+            DEFAULT_Y_COORD,
+            EPD_WIDTH,
+            self.STATUS_BAR_HEIGHT + self.STATUS_BAR_PADDING,
+            COLOUR_WHITE
+        )
+
     def redraw_status_bar(self):
+        self.clear_status_bar()
         self.draw_notification()
+        self.draw_time()
         self.display.render_window()
 
     def set_notification(self, notification: str):
@@ -98,20 +114,18 @@ class StatusBar:
         """
         self.notification = notification
 
-    def set_time(self, time: localtime):
-        """
-        Sets the currently displaying time.
-        :param time: localtime object. formats time into HH:MM format for display
-        :return: None
-        """
-        self.time_display = time
-
     def draw_notification(self):
         """
         Draws as many characters of the StatusBar.notification String as possible.
         Truncates off any characters exceeding the NOTIFICATION_WIDTH
         """
-        self.display.frame_buffer.hline(5, self.STATUS_BAR_HEIGHT, EPD_WIDTH - 10, COLOUR_BLACK)
+
+        self.display.frame_buffer.hline(
+            self.STATUS_BAR_PADDING,
+            self.STATUS_BAR_HEIGHT,
+            EPD_WIDTH - self.STATUS_BAR_PADDING * 2,
+            COLOUR_BLACK
+        )
 
         cols = self.NOTIFICATION_WIDTH // NUMBER_OF_BITS
         character_count = 0
@@ -129,3 +143,23 @@ class StatusBar:
             # Stop drawing once character length has been exceeded.
             if character_count >= row_height:
                 break
+
+    def set_time(self, current_time: localtime):
+        """
+        Sets the currently displaying time.
+        :param current_time: localtime object. formats time into HH:MM format for display
+        :return: None
+        """
+
+        if current_time:
+            self.time_display = '{3}:{4}'.format(*current_time)
+        else:
+            self.time_display = const('--:--')
+
+    def draw_time(self):
+        self.display.frame_buffer.text(
+            self.time_display,
+            self.STATUS_BAR_TIME_SPACER,
+            self.STATUS_BAR_PADDING,
+            COLOUR_BLACK
+        )
