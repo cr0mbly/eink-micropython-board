@@ -1,18 +1,16 @@
 from app.display import EinkDisplay, StatusBar
 from app.system import SystemManager
+from app.timer_tasks import system_update
+
+sys_manager = SystemManager()
+
+display = EinkDisplay()
+status_bar = StatusBar(display)
 
 
 def main():
-    sys_manager = SystemManager()
-    sys_manager.update_system()
-
-    display = EinkDisplay()
     display.initialize_display()
-
-    status_bar = StatusBar(display)
-    status_bar.set_notification('This is a test notification')
-    status_bar.set_time(sys_manager.system_time)
-    status_bar.redraw_status_bar()
+    system_update()
 
 
 if __name__ == '__main__':
