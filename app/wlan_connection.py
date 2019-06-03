@@ -17,7 +17,7 @@ def connect_to_network():
 
         current_try = 0
         while current_try < NETWORK_RETRIES:
-            time.sleep(10)
+            time.sleep(2)
 
             if sta_if.isconnected():
                 return sta_if
@@ -25,4 +25,4 @@ def connect_to_network():
             current_try += 1
 
     if not sta_if.isconnected():
-        raise FailedToConnectToNetworkException('Unable to connect to any available network')
+        raise FailedToConnectToNetworkException(const('Unable to connect to any available network'))

@@ -8,10 +8,10 @@ from app.external_dependencies.epaper2in9 import EPD, EPD_WIDTH, EPD_HEIGHT
 SPI_ID = const(1)
 NUMBER_OF_BITS = const(8)
 
-EINK_CS = Pin(0)  # GPIO 0
-EINK_BUSY = Pin(2)  # GPIO 2
-EINK_DC = Pin(4)  # GPIO 4
-EINK_RESET = Pin(5)  # GPIO 5
+EINK_CS = Pin(0)      # GPIO 0
+EINK_BUSY = Pin(2)    # GPIO 2
+EINK_DC = Pin(4)      # GPIO 4
+EINK_RESET = Pin(5)   # GPIO 5
 
 COLOUR_WHITE = const(1)
 COLOUR_BLACK = const(0)
@@ -79,7 +79,7 @@ class StatusBar:
     STATUS_BAR_HEIGHT = const(15)
     STATUS_BAR_PADDING = const(5)
     STATUS_BAR_TIME_SPACER = const(85)
-    NOTIFICATION_WIDTH = const(50)
+    NOTIFICATION_WIDTH = const(85)
 
     notification = ''  # String containing notification message.
     time_display = None  # localtime object for display.
@@ -152,7 +152,7 @@ class StatusBar:
         """
 
         if current_time:
-            self.time_display = '{3}:{4}'.format(*current_time)
+            self.time_display = '{4}:{5}'.format(*current_time)
         else:
             self.time_display = const('--:--')
 
