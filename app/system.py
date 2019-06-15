@@ -1,3 +1,4 @@
+import ujson
 from machine import RTC
 from ntptime import settime
 
@@ -15,6 +16,7 @@ class SystemManager:
 
     wifi_connection = None
     system_time = None
+    apps = None
 
     def update_system(self):
         """
@@ -48,4 +50,13 @@ class SystemManager:
 
         self.system_time = RTC().datetime()
 
+    def load_apps(self):
+        """
+        Load the mapping of apps from system settings. stores result in
+        SystemManager.apps for general use.
+        :return: registered apps in app_name: app format
+        """
+        with open('./app_mapping.json') as f:
+            self.apps = ujson.loads(f.read())
 
+        return self.apps

@@ -8,10 +8,10 @@ from app.external_dependencies.epaper2in9 import EPD, EPD_WIDTH, EPD_HEIGHT
 SPI_ID = const(1)
 NUMBER_OF_BITS = const(8)
 
-EINK_CS = Pin(0)      # GPIO 0
-EINK_BUSY = Pin(2)    # GPIO 2
-EINK_DC = Pin(4)      # GPIO 4
-EINK_RESET = Pin(5)   # GPIO 5
+EINK_CS = Pin(0)  # GPIO 0
+EINK_BUSY = Pin(2)  # GPIO 2
+EINK_DC = Pin(4)  # GPIO 4
+EINK_RESET = Pin(5)  # GPIO 5
 
 COLOUR_WHITE = const(1)
 COLOUR_BLACK = const(0)
@@ -82,7 +82,7 @@ class StatusBar:
     NOTIFICATION_WIDTH = const(85)
 
     notification = ''  # String containing notification message.
-    time_display = None  # localtime object for display.
+    time_display = '--:--'  # localtime object for display.
 
     def __init__(self, display: EinkDisplay):
         self.display = display
@@ -163,3 +163,56 @@ class StatusBar:
             self.STATUS_BAR_PADDING,
             COLOUR_BLACK
         )
+
+
+class AppDrawer:
+    # Style formatting for AppDrawer.
+    APP_DRAWER_SPACER = const(20)
+    ITEM_HEIGHT = const(50)
+    TEXT_SPACER = const(10)
+
+    app_items = {}
+
+    def __init__(self, display: EinkDisplay):
+        self.display = display
+        self.app_drawer_width = display.driver.width
+        self.app_drawer_height = display.driver.height
+
+    def redraw_app_drawer(self):
+        self.clear_drawer()
+        self.load_app_items()
+        self.display.render_window()
+
+    def clear_drawer(self):
+        """
+        Clear the app drawer of any content.
+        :return: None
+        """
+        self.display.frame_buffer.fill_rect(
+            DEFAULT_X_COORD,
+            DEFAULT_Y_COORD + self.APP_DRAWER_SPACER,
+            self.app_drawer_width,
+            self.app_drawer_height,
+            COLOUR_WHITE
+        )
+
+    def load_app_items(self):
+        global system_manager
+
+        apps = system_manager.load_apps()
+
+        for n, app_name, app in enumerate(apps.items()):
+            self.display.frame_buffer.rect(
+                DEFAULT_X_COORD,
+                DEFAULT_Y_COORD + self.APP_DRAWER_SPACER + n * self.APP_DRAWER_SPACER,
+                self.app_drawer_width,
+                self.app_drawer_height,
+                COLOUR_BLACK,
+            )
+
+            self.display.frame_buffer.text(
+                app_name,
+                DEFAULT_X_COORD + self.TEXT_SPACER,
+                DEFAULT_Y_COORD + self.APP_DRAWER_SPACER + n * self.APP_DRAWER_SPACER + self.TEXT_SPACER,
+                COLOUR_BLACK,
+            )

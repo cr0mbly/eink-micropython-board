@@ -1,17 +1,20 @@
 from machine import Timer
 from micropython import const
 
+from app.display import StatusBar
+from app.system import SystemManager
+
+
 UPDATE_EVERY_SIXTY_SECONDS = const(60000)
 
 
-def system_update():
+def system_update(sys_manager: SystemManager, status_bar: StatusBar):
     """
     Queue a Task timer to trigger and redisplay app updates.
     :return:
     """
 
     def rerun(timer):
-        global sys_manager, status_bar
         sys_manager.update_system()
         status_bar.set_time(sys_manager.system_time)
         status_bar.redraw_status_bar()
