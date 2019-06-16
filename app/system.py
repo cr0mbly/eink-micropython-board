@@ -52,11 +52,18 @@ class SystemManager:
 
     def load_apps(self):
         """
-        Load the mapping of apps from system settings. stores result in
+        Lazy load the mapping of apps from system settings. Stores result in
         SystemManager.apps for general use.
         :return: registered apps in app_name: app format
         """
+        if self.apps is not None:
+            return self.apps
+
         with open('./app_mapping.json') as f:
-            self.apps = ujson.loads(f.read())
+            self.apps = ujson.loads(f.read())['apps']
 
         return self.apps
+
+
+# Instantiate for global use.
+system_manager = SystemManager()

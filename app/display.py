@@ -4,6 +4,7 @@ from micropython import const
 from utime import localtime
 
 from app.external_dependencies.epaper2in9 import EPD, EPD_WIDTH, EPD_HEIGHT
+from app.system import system_manager
 
 SPI_ID = const(1)
 NUMBER_OF_BITS = const(8)
@@ -169,24 +170,22 @@ class AppDrawer:
     # Style formatting for AppDrawer.
     APP_DRAWER_SPACER = const(20)
     ITEM_HEIGHT = const(50)
-    TEXT_SPACER = const(10)
-
-    app_items = {}
+    TEXT_SPACER = const(6)
 
     def __init__(self, display: EinkDisplay):
         self.display = display
         self.app_drawer_width = display.driver.width
         self.app_drawer_height = display.driver.height
+        self.selected_app = const(0)
 
     def redraw_app_drawer(self):
         self.clear_drawer()
-        self.load_app_items()
+        self.load_apps_for_display()
         self.display.render_window()
 
     def clear_drawer(self):
         """
         Clear the app drawer of any content.
-        :return: None
         """
         self.display.frame_buffer.fill_rect(
             DEFAULT_X_COORD,
@@ -196,23 +195,42 @@ class AppDrawer:
             COLOUR_WHITE
         )
 
-    def load_app_items(self):
-        global system_manager
-
+    def load_apps_for_display(self):
+        """
+        Pull in all installs apps and displays the UI drawer for selection
+        """
         apps = system_manager.load_apps()
-
-        for n, app_name, app in enumerate(apps.items()):
-            self.display.frame_buffer.rect(
-                DEFAULT_X_COORD,
-                DEFAULT_Y_COORD + self.APP_DRAWER_SPACER + n * self.APP_DRAWER_SPACER,
-                self.app_drawer_width,
-                self.app_drawer_height,
-                COLOUR_BLACK,
+        for app_position, current_app in enumerate(apps):
+            self._draw_app_selector_box(
+                current_app['app_name'],
+                app_position,
+                is_selected=app_position == self.selected_app
             )
 
-            self.display.frame_buffer.text(
-                app_name,
-                DEFAULT_X_COORD + self.TEXT_SPACER,
-                DEFAULT_Y_COORD + self.APP_DRAWER_SPACER + n * self.APP_DRAWER_SPACER + self.TEXT_SPACER,
-                COLOUR_BLACK,
-            )
+    def select_app(self, app_position: int):
+        self.selected_app = app_position
+        self.redraw_app_drawer()
+
+    def _draw_app_selector_box(self, app_name: str, app_position: int, is_selected=False):
+        """
+        Taking a selected app draw it's place on the app drawer.
+        """
+        box_parameters = [
+            DEFAULT_X_COORD,
+            DEFAULT_Y_COORD + self.APP_DRAWER_SPACER + app_position * self.APP_DRAWER_SPACER,
+            self.app_drawer_width,
+            self.APP_DRAWER_SPACER,
+            COLOUR_BLACK,
+        ]
+
+        if is_selected:
+            self.display.frame_buffer.fill_rect(*box_parameters)
+        else:
+            self.display.frame_buffer.rect(*box_parameters)
+
+        self.display.frame_buffer.text(
+            app_name,
+            DEFAULT_X_COORD + self.TEXT_SPACER,
+            DEFAULT_Y_COORD + self.APP_DRAWER_SPACER + app_position * self.APP_DRAWER_SPACER + self.TEXT_SPACER,
+            COLOUR_WHITE if is_selected else COLOUR_BLACK,
+        )

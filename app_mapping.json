@@ -1,7 +1,16 @@
 {
-  "apps":[
+  "apps": [
     {
-      "Clock": null
+      "app_name": "clock",
+      "verbose_name": "Clock"
+    },
+    {
+     "app_name": "weather",
+      "verbose_name": "Weather"
+    },
+    {
+      "app_name": "settings",
+      "verbose_name": "Settings"
     }
   ]
 }

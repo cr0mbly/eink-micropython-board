@@ -1,7 +1,4 @@
 from app.display import EinkDisplay, StatusBar, AppDrawer
-from app.system import SystemManager
-
-system_manager = SystemManager()
 
 
 def main():
@@ -13,6 +10,8 @@ def main():
     status_bar.redraw_status_bar()
 
     app_drawer = AppDrawer(display)
+    app_drawer.load_apps_for_display()
+    app_drawer.select_app(1)
     app_drawer.redraw_app_drawer()
 
 
